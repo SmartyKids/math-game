@@ -494,7 +494,7 @@
       ]
     };
 
-    let selectedGrade = null;
+    let selectedGrade = 1;
     let questions = [];
 
     const areaNames = {
@@ -805,5 +805,17 @@
     //         recommendations: results.recommendations
     //     });
     // }
+  // Инициализация состояния при загрузке: разблокируем кнопку старта
+(function initStartState() {
+    const startButton = document.getElementById("start-button");
+    if (startButton && selectedGrade) {
+        startButton.disabled = false;
+        startButton.innerHTML = 'Передать ребёнку и начать <span aria-hidden="true">→</span>';
+    }
+    const hint = document.getElementById("grade-hint");
+    if (hint && selectedGrade) {
+        hint.textContent = `Выбран ${selectedGrade} класс: задания и ожидаемый темп настроены под этот уровень.`;
+    }
+})();
 </script>
 </body></html>
