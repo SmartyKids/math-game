@@ -293,6 +293,7 @@
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
     }
   </style>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
   <main class="shell">
@@ -779,5 +780,31 @@
     });
   </script>
 
-
+<script>
+    // Инициализация Telegram Web App
+    const tg = window.Telegram.WebApp;
+    
+    // Сообщаем Telegram, что приложение готово
+    tg.ready();
+    
+    // Разворачиваем на весь экран
+    tg.expand();
+    
+    // Устанавливаем цвет шапки под стиль сайта
+    tg.setHeaderColor('#FF8C00'); // оранжевый цвет Математической лаборатории
+    
+    // Функция отправки данных обратно в бот (например, после прохождения теста)
+    function sendDataToBot(data) {
+        tg.sendData(JSON.stringify(data));
+    }
+    
+    // Пример: когда ребенок прошел тест
+    // function onTestComplete(results) {
+    //     sendDataToBot({
+    //         score: results.score,
+    //         grade: results.grade,
+    //         recommendations: results.recommendations
+    //     });
+    // }
+</script>
 </body></html>
