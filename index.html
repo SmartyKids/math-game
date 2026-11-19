@@ -988,17 +988,34 @@
   }
 
   function openGiftInBot() {
-    if (window.Telegram?.WebApp?.HapticFeedback) {
-      window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
-    }
+  const giftLink =
+    "https://t.me/Mathlabb_bot?start=link_R3497VdpZS";
 
-    if (window.Telegram?.WebApp?.initData) {
-      window.location.href = PUZZLEBOT_GIFT_APP_LINK;
-      return;
-    }
+  const telegramApp = window.Telegram?.WebApp;
 
-    window.location.href = PUZZLEBOT_GIFT_WEB_LINK;
+  if (telegramApp?.HapticFeedback) {
+    telegramApp.HapticFeedback.impactOccurred("medium");
   }
+
+  if (
+    telegramApp &&
+    typeof telegramApp.openTelegramLink === "function"
+  ) {
+    telegramApp.openTelegramLink(giftLink);
+
+    /*
+     * На мобильном Telegram Mini App не закрывается автоматически.
+     * Даём ссылке открыться и закрываем приложение.
+     */
+    window.setTimeout(function () {
+      telegramApp.close();
+    }, 700);
+
+    return;
+  }
+
+  window.location.href = giftLink;
+}
 
   giftModalButton?.addEventListener("click", openGiftInBot);
   giftModalClose?.addEventListener("click", closeGiftModal);
