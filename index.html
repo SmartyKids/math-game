@@ -292,6 +292,103 @@
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
     }
+    /* Модальное окно с подарком */
+.gift-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgba(40, 18, 61, 0.72);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+}
+
+.gift-modal[hidden] {
+  display: none;
+}
+
+.gift-modal__card {
+  position: relative;
+  width: min(100%, 430px);
+  padding: 34px 24px 26px;
+  overflow: hidden;
+  text-align: center;
+  border: 3px solid rgba(255, 255, 255, 0.8);
+  border-radius: 28px;
+  background: linear-gradient(145deg, #ff8c00, #ffad22);
+  box-shadow: 0 25px 70px rgba(40, 18, 61, 0.4);
+  animation: gift-modal-appear 0.3s ease-out;
+}
+
+.gift-modal__emoji {
+  display: block;
+  margin-bottom: 12px;
+  font-size: 64px;
+  line-height: 1;
+}
+
+.gift-modal__title {
+  margin: 0 0 12px;
+  color: #ffffff;
+  font-size: clamp(26px, 7vw, 35px);
+  line-height: 1.15;
+}
+
+.gift-modal__text {
+  margin: 0 0 22px;
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.gift-modal__button {
+  width: 100%;
+  min-height: 60px;
+  padding: 15px 20px;
+  border: 0;
+  border-radius: 18px;
+  color: #3d146f;
+  background: #c8ff00;
+  box-shadow: 0 7px 0 rgba(61, 20, 111, 0.35);
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.gift-modal__button:active {
+  transform: translateY(4px);
+  box-shadow: 0 3px 0 rgba(61, 20, 111, 0.35);
+}
+
+.gift-modal__close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #3d146f;
+  background: rgba(255, 255, 255, 0.92);
+  font-size: 25px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@keyframes gift-modal-appear {
+  from {
+    opacity: 0;
+    transform: translateY(20px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
   </style>
   <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
@@ -657,6 +754,10 @@
       document.getElementById("pace-result").textContent = buildPaceResult();
       if (score === questions.length) playPerfectSound();
       window.scrollTo({ top: 0, behavior: "smooth" });
+      
+      window.setTimeout(function () {
+  showGiftModal();
+}, 1200);
     }
 
     function getAudioContext() {
@@ -817,5 +918,95 @@
         hint.textContent = `Выбран ${selectedGrade} класс: задания и ожидаемый темп настроены под этот уровень.`;
     }
 })();
+</script>
+  <div
+  class="gift-modal"
+  id="gift-modal"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="gift-modal-title"
+  hidden
+>
+  <div class="gift-modal__card">
+    <button
+      class="gift-modal__close"
+      id="gift-modal-close"
+      type="button"
+      aria-label="Закрыть окно"
+    >
+      ×
+    </button>
+
+    <span class="gift-modal__emoji" aria-hidden="true">🎁</span>
+
+    <h2 class="gift-modal__title" id="gift-modal-title">
+        Тренажёр для занятий дома
+    </h2>
+
+    <p class="gift-modal__text">
+      Мы подготовили подарок, который поможет тренировать
+  математическое мышление по 10–15 минут в день.
+    </p>
+
+    <button
+      class="gift-modal__button"
+      id="gift-modal-button"
+      type="button"
+    >
+      Забрать подарок 🎁
+    </button>
+  </div>
+</div>
+  
+  <script>
+  const PUZZLEBOT_GIFT_APP_LINK =
+    "tg://resolve?domain=Mathlabb_bot&start=link_R3497VdpZS";
+
+  const PUZZLEBOT_GIFT_WEB_LINK =
+    "https://t.me/Mathlabb_bot?start=link_R3497VdpZS";
+
+  const giftModal = document.getElementById("gift-modal");
+  const giftModalButton = document.getElementById("gift-modal-button");
+  const giftModalClose = document.getElementById("gift-modal-close");
+
+  function showGiftModal() {
+    if (!giftModal) return;
+
+    giftModal.hidden = false;
+    document.body.style.overflow = "hidden";
+
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.notificationOccurred("success");
+    }
+  }
+
+  function closeGiftModal() {
+    if (!giftModal) return;
+
+    giftModal.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function openGiftInBot() {
+    if (window.Telegram?.WebApp?.HapticFeedback) {
+      window.Telegram.WebApp.HapticFeedback.impactOccurred("medium");
+    }
+
+    if (window.Telegram?.WebApp?.initData) {
+      window.location.href = PUZZLEBOT_GIFT_APP_LINK;
+      return;
+    }
+
+    window.location.href = PUZZLEBOT_GIFT_WEB_LINK;
+  }
+
+  giftModalButton?.addEventListener("click", openGiftInBot);
+  giftModalClose?.addEventListener("click", closeGiftModal);
+
+  giftModal?.addEventListener("click", function (event) {
+    if (event.target === giftModal) {
+      closeGiftModal();
+    }
+  });
 </script>
 </body></html>
